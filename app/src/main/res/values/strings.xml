@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RxJava TestApp</string>
+    <string name="submit_button_text">Submit</string>
+</resources>
