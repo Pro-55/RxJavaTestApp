@@ -3,23 +3,28 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorWhite"
     android:padding="8dp"
     tools:context=".MainActivity">
+
+    <View
+        android:id="@+id/idVTopBorder"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_above="@id/idRvUserNameRecycler"
+        android:background="@color/colorWhite" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/idRvUserNameRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@id/idEtEditText"
-        android:layout_margin="8dp"
-        android:background="@drawable/layout_users_list_background" />
+        android:layout_above="@id/idEtEditText" />
 
     <EditText
         android:id="@+id/idEtEditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:layout_margin="8dp"
         android:imeOptions="actionSend"
         android:singleLine="true" />
 </RelativeLayout>

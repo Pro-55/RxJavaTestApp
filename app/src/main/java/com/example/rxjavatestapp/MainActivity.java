@@ -1,6 +1,7 @@
 package com.example.rxjavatestapp;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 
 import com.example.rxjavatestapp.network.ApiFunctions.ApiFail;
@@ -22,6 +23,7 @@ import rx.schedulers.Schedulers;
 public class MainActivity extends AppCompatActivity implements RecyclerInterface {
     private EditText idEtEditText;
     private RecyclerView idRvUserNameRecycler;
+    private View idVTopBorder;
     private RecyclerAdapter recyclerAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private String subString;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
         subString = "";
 
         idEtEditText = findViewById(R.id.idEtEditText);
+        idVTopBorder = findViewById(R.id.idVTopBorder);
 
         //RecyclerView Setup
         idRvUserNameRecycler = findViewById(R.id.idRvUserNameRecycler);
@@ -76,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                             ApiCall(subString);
                         } else {
                             recyclerAdapter.clearUserList();
+                            idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
                         }
                     }
                 });
@@ -93,8 +97,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                                 recyclerAdapter.updateUserList(userSearchResponce.getData().getUsers());
                                 int lastPosition = userSearchResponce.getData().getUsers().size() - 1;
                                 idRvUserNameRecycler.scrollToPosition(lastPosition);
+                                idVTopBorder.setBackgroundColor(getColor(R.color.colorGreen));
                             } else {
                                 recyclerAdapter.clearUserList();
+                                idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
                             }
                         }
                     }
@@ -115,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
 
     @Override
     public void selectItem(String userName) {
+        idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
         recyclerAdapter.clearUserList();
         String replaceString = userName.concat(" ");
         idEtEditText.setText(idEtEditText.getText().toString().replace(subString, replaceString));
