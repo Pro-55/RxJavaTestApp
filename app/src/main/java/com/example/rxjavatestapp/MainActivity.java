@@ -70,16 +70,20 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                     @Override
                     public void onNext(CharSequence charSequence) {
                         mainString = charSequence.toString();
-                        if (mainString.contains("@") && !(mainString.lastIndexOf(" ") > mainString.lastIndexOf("@"))) {
-                            subString = mainString.substring(mainString.lastIndexOf("@") + 1);
-                        } else {
-                            subString = "";
-                        }
-                        if (subString.length() > 0) {
-                            ApiCall(subString);
-                        } else {
-                            recyclerAdapter.clearUserList();
-                            idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
+                        String[] separated = mainString.split(" ");
+                        for (int x = 0; x < separated.length; x++) {
+                            int stringIndex = mainString.indexOf(separated[x]);
+                            int stringLength = separated[x].length();
+                            int cursorIndex = idEtEditText.getSelectionStart();
+                            int stringEnd = stringIndex + stringLength;
+                            if (mainString.contains("@")) {
+                                if (cursorIndex == stringEnd) {
+                                    if (separated[x].indexOf("@") == 0) {
+                                        subString = separated[x].substring(separated[x].indexOf("@") + 1);
+                                        ApiCall(subString);
+                                    }
+                                }
+                            }
                         }
                     }
                 });
