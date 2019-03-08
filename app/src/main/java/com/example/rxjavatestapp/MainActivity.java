@@ -82,7 +82,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                                         subString = separated[x].substring(separated[x].indexOf("@") + 1);
                                         ApiCall(subString);
                                     }
+                                } else {
+                                    recyclerAdapter.clearUserList();
+                                    idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
                                 }
+                            } else {
+                                recyclerAdapter.clearUserList();
+                                idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
                             }
                         }
                     }
