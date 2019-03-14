@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                             int cursorIndex = idEtEditText.getSelectionStart();
                             int stringEnd = stringIndex + stringLength;
                             if (mainString.contains("@")) {
-                                if (cursorIndex == stringEnd) {
+                                if (cursorIndex <= stringEnd) {
                                     if (separated[x].indexOf("@") == 0) {
                                         subString = separated[x].substring(separated[x].indexOf("@") + 1);
                                         ApiCall(subString);
