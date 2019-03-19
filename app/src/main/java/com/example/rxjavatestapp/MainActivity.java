@@ -9,6 +9,7 @@ import android.text.TextPaint;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -19,9 +20,11 @@ import com.example.rxjavatestapp.network.ApiFunctions.ApiFail;
 import com.example.rxjavatestapp.network.ApiFunctions.ApiSuccess;
 import com.example.rxjavatestapp.network.ApiFunctions.HttpErrorResponse;
 import com.example.rxjavatestapp.network.api.Api;
+import com.example.rxjavatestapp.network.responce.User;
 import com.example.rxjavatestapp.network.responce.UserSearchResponce;
 import com.jakewharton.rxbinding.widget.RxTextView;
 
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,9 +44,10 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
     private RecyclerView.LayoutManager layoutManager;
     private String subString;
     private String mainString;
+    private HashMap<String, User> userTagList;
 
     private static final String TAG = "MainActivity";
-    private static final String SESSION_ID = "56jYDrvHSfj";
+    private static final String SESSION_ID = "O1OD6UFat1";
     private static final int COUNT = 7;
 
     @Override
@@ -53,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
 
         mainString = "";
         subString = "";
+        userTagList = new HashMap<>();
 
         idEtEditText = findViewById(R.id.idEtEditText);
         idVTopBorder = findViewById(R.id.idVTopBorder);
@@ -71,6 +76,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                             ClickableSpan termsClickableSpan = new ClickableSpan() {
                                 @Override
                                 public void onClick(View textView) {
+                                    User user = userTagList.get(aSeparated.substring(1));
+                                    if (user != null) {
+                                        Log.d(TAG, "TestLog: |-/: " + user.getUsername());
+                                        Log.d(TAG, "TestLog: |-/: " + user.getUserId());
+                                        Log.d(TAG, "TestLog: |-/: " + user.getUserFavorited());
+                                        Log.d(TAG, "TestLog: |-/: " + user.getProfilePicUrl());
+                                    }
                                     Toast.makeText(getApplicationContext(), aSeparated, Toast.LENGTH_SHORT).show();
                                 }
 
@@ -181,7 +193,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
     }
 
     @Override
-    public void selectItem(String userName) {
+    public void selectItem(User user) {
+        String userName = user.getUsername();
+        userTagList.put(userName, user);
         idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
         recyclerAdapter.clearUserList();
         String replaceString = userName.concat(" ");
