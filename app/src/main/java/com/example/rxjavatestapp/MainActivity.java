@@ -1,8 +1,19 @@
 package com.example.rxjavatestapp;
 
+import android.graphics.Color;
 import android.os.Bundle;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.TextPaint;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.rxjavatestapp.network.ApiFunctions.ApiFail;
 import com.example.rxjavatestapp.network.ApiFunctions.ApiSuccess;
@@ -22,6 +33,8 @@ import rx.schedulers.Schedulers;
 
 public class MainActivity extends AppCompatActivity implements RecyclerInterface {
     private EditText idEtEditText;
+    private Button idBtSendButton;
+    private TextView idTvCommentBox;
     private RecyclerView idRvUserNameRecycler;
     private View idVTopBorder;
     private RecyclerAdapter recyclerAdapter;
@@ -43,6 +56,47 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
 
         idEtEditText = findViewById(R.id.idEtEditText);
         idVTopBorder = findViewById(R.id.idVTopBorder);
+        idTvCommentBox = findViewById(R.id.idTvCommentBox);
+        idBtSendButton = findViewById(R.id.idBtSendButton);
+        idBtSendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String commentString = idEtEditText.getText().toString();
+                String[] separated = commentString.split(" ");
+                SpannableStringBuilder spannableStringBuilder = new SpannableStringBuilder();
+                for (final String aSeparated : separated) {
+                    if (aSeparated.contains("@")) {
+                        if (aSeparated.indexOf("@") == 0 && aSeparated.length() > 2) {
+                            SpannableString spannableString = new SpannableString(aSeparated);
+                            ClickableSpan termsClickableSpan = new ClickableSpan() {
+                                @Override
+                                public void onClick(View textView) {
+                                    Toast.makeText(getApplicationContext(), aSeparated, Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void updateDrawState(TextPaint drawState) {
+                                    super.updateDrawState(drawState);
+                                    drawState.setUnderlineText(false);
+                                }
+                            };
+                            spannableString.setSpan(termsClickableSpan, 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableString.setSpan(new ForegroundColorSpan(getColor(R.color.colorGreen)), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableStringBuilder.append(spannableString);
+                        } else {
+                            spannableStringBuilder.append(aSeparated);
+                        }
+                    } else {
+                        spannableStringBuilder.append(aSeparated);
+                    }
+                    spannableStringBuilder.append(" ");
+                }
+                idTvCommentBox.setText(spannableStringBuilder, TextView.BufferType.SPANNABLE);
+                idTvCommentBox.setMovementMethod(LinkMovementMethod.getInstance());
+                idTvCommentBox.setHighlightColor(Color.TRANSPARENT);
+                idEtEditText.setText("");
+            }
+        });
 
         //RecyclerView Setup
         idRvUserNameRecycler = findViewById(R.id.idRvUserNameRecycler);
@@ -52,10 +106,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
         idRvUserNameRecycler.setLayoutManager(layoutManager);
         idRvUserNameRecycler.setAdapter(recyclerAdapter);
 
-
         RxTextView.textChanges(idEtEditText)
                 .skip(1)
-                .debounce(500, TimeUnit.MILLISECONDS)
+                .debounce(300, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Subscriber<CharSequence>() {
@@ -71,15 +124,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                     public void onNext(CharSequence charSequence) {
                         mainString = charSequence.toString();
                         String[] separated = mainString.split(" ");
-                        for (int x = 0; x < separated.length; x++) {
-                            int stringIndex = mainString.indexOf(separated[x]);
-                            int stringLength = separated[x].length();
+                        for (String aSeparated : separated) {
+                            int stringIndex = mainString.indexOf(aSeparated);
+                            int stringLength = aSeparated.length();
                             int cursorIndex = idEtEditText.getSelectionStart();
                             int stringEnd = stringIndex + stringLength;
                             if (mainString.contains("@")) {
                                 if (cursorIndex > stringIndex && cursorIndex <= stringEnd) {
-                                    if (separated[x].indexOf("@") == 0) {
-                                        subString = separated[x].substring(separated[x].indexOf("@") + 1);
+                                    if (aSeparated.indexOf("@") == 0) {
+                                        subString = aSeparated.substring(aSeparated.indexOf("@") + 1);
                                         ApiCall(subString);
                                     }
                                 } else {
@@ -105,8 +158,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                         if (userSearchResponce.getOpStatus().equalsIgnoreCase("success")) {
                             if (userSearchResponce.getData().getCount() > 0) {
                                 recyclerAdapter.updateUserList(userSearchResponce.getData().getUsers());
-                                int lastPosition = userSearchResponce.getData().getUsers().size() - 1;
-                                idRvUserNameRecycler.scrollToPosition(lastPosition);
                                 idVTopBorder.setBackgroundColor(getColor(R.color.colorGreen));
                             } else {
                                 recyclerAdapter.clearUserList();
