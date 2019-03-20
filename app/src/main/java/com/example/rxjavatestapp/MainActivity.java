@@ -27,6 +27,7 @@ import com.jakewharton.rxbinding.widget.RxTextView;
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
     private Button idBtSendButton;
     private TextView idTvCommentBox;
     private RecyclerView idRvUserNameRecycler;
-    private View idVTopBorder;
     private RecyclerAdapter recyclerAdapter;
     private RecyclerView.LayoutManager layoutManager;
     private String subString;
@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
         userTagList = new HashMap<>();
 
         idEtEditText = findViewById(R.id.idEtEditText);
-        idVTopBorder = findViewById(R.id.idVTopBorder);
         idTvCommentBox = findViewById(R.id.idTvCommentBox);
         idBtSendButton = findViewById(R.id.idBtSendButton);
         idBtSendButton.setOnClickListener(new View.OnClickListener() {
@@ -75,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                             SpannableString spannableString = new SpannableString(aSeparated);
                             ClickableSpan termsClickableSpan = new ClickableSpan() {
                                 @Override
-                                public void onClick(View textView) {
+                                public void onClick(@NonNull View textView) {
                                     User user = userTagList.get(aSeparated.substring(1));
                                     if (user != null) {
                                         Log.d(TAG, "TestLog: |-/: " + user.getUsername());
@@ -87,13 +86,13 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                                 }
 
                                 @Override
-                                public void updateDrawState(TextPaint drawState) {
+                                public void updateDrawState(@NonNull TextPaint drawState) {
                                     super.updateDrawState(drawState);
                                     drawState.setUnderlineText(false);
                                 }
                             };
                             spannableString.setSpan(termsClickableSpan, 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                            spannableString.setSpan(new ForegroundColorSpan(getColor(R.color.colorGreen)), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                            spannableString.setSpan(new ForegroundColorSpan(getColor(R.color.colorAccent)), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                             spannableStringBuilder.append(spannableString);
                         } else {
                             spannableStringBuilder.append(aSeparated);
@@ -149,11 +148,9 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                                     }
                                 } else {
                                     recyclerAdapter.clearUserList();
-                                    idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
                                 }
                             } else {
                                 recyclerAdapter.clearUserList();
-                                idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
                             }
                         }
                     }
@@ -170,10 +167,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                         if (userSearchResponce.getOpStatus().equalsIgnoreCase("success")) {
                             if (userSearchResponce.getData().getCount() > 0) {
                                 recyclerAdapter.updateUserList(userSearchResponce.getData().getUsers());
-                                idVTopBorder.setBackgroundColor(getColor(R.color.colorGreen));
                             } else {
                                 recyclerAdapter.clearUserList();
-                                idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
                             }
                         }
                     }
@@ -196,7 +191,6 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
     public void selectItem(User user) {
         String userName = user.getUsername();
         userTagList.put(userName, user);
-        idVTopBorder.setBackgroundColor(getColor(R.color.colorWhite));
         recyclerAdapter.clearUserList();
         String replaceString = userName.concat(" ");
         idEtEditText.setText(idEtEditText.getText().toString().replace(subString, replaceString));

@@ -15,7 +15,9 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity
             android:name=".MainActivity"
-            android:windowSoftInputMode="adjustPan">
+            android:screenOrientation="portrait"
+            android:theme="@style/MainActivityBackground"
+            android:windowSoftInputMode="adjustResize|stateAlwaysHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
