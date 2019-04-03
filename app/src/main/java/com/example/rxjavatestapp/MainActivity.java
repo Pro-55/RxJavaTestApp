@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
     private String subString;
     private String mainString;
     private HashMap<String, User> userTagList;
+    private int subStringStart;
+    private int subStringEnd;
 
     private static final String TAG = "MainActivity";
     private static final String SESSION_ID = "URxgM0zh";
@@ -137,26 +139,15 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                         String firstHalf = mainString.substring(0, idEtEditText.getSelectionStart());
                         String secondHalf = mainString.substring(idEtEditText.getSelectionStart());
                         if (mainString.contains("@")) {
-                            if (idEtEditText.getSelectionStart() > firstHalf.lastIndexOf(" ")
-                                    && idEtEditText.getSelectionStart() > firstHalf.lastIndexOf("\n")
-                                    && firstHalf.lastIndexOf("@") > firstHalf.lastIndexOf(" ")
-                                    && firstHalf.lastIndexOf("@") > firstHalf.lastIndexOf("\n")) {
+                            if (firstHalf.lastIndexOf("@") > firstHalf.lastIndexOf(" ")) {
+                                subStringStart = firstHalf.lastIndexOf("@") + 1;
+                                subStringEnd = idEtEditText.getSelectionStart();
                                 if (mainString.length() == idEtEditText.getSelectionStart()) {
-                                    subString = mainString.substring(mainString.lastIndexOf("@") + 1);
+                                    subString = mainString.substring(subStringStart);
                                     ApiCall(subString);
                                 } else {
-                                    int subStringStart = firstHalf.lastIndexOf("@") + 1;
-                                    int subStringEnd = firstHalf.lastIndexOf("@") + 1;
-                                    if (secondHalf.contains(" ") && secondHalf.contains("\n")) {
-                                        if (secondHalf.indexOf(" ") < secondHalf.indexOf("\n")) {
-                                            subStringEnd = idEtEditText.getSelectionStart() + secondHalf.indexOf(" ");
-                                        } else if (secondHalf.indexOf("\n") < secondHalf.indexOf(" ")) {
-                                            subStringEnd = idEtEditText.getSelectionStart() + secondHalf.indexOf("\n");
-                                        }
-                                    } else if (secondHalf.contains(" ")) {
+                                    if (secondHalf.contains(" ")) {
                                         subStringEnd = idEtEditText.getSelectionStart() + secondHalf.indexOf(" ");
-                                    } else if (secondHalf.contains("\n")) {
-                                        subStringEnd = idEtEditText.getSelectionStart() + secondHalf.indexOf("\n");
                                     }
                                     subString = mainString.substring(subStringStart, subStringEnd);
                                     ApiCall(subString);
@@ -206,8 +197,14 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
         String userName = user.getUsername();
         userTagList.put(userName, user);
         recyclerAdapter.clearUserList();
-        String replaceString = userName.concat(" ");
-        idEtEditText.setText(idEtEditText.getText().toString().replace(subString, replaceString));
+        String newSubString;
+        if (!(mainString.substring(subStringEnd).indexOf(" ") == 0)) {
+            newSubString = userName.concat(" ");
+        } else {
+            newSubString = userName;
+        }
+        String newString = mainString.substring(0, subStringStart) + newSubString + mainString.substring(subStringEnd);
+        idEtEditText.setText(newString);
         idEtEditText.setSelection(idEtEditText.getText().length());
     }
 
