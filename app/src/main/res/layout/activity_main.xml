@@ -36,8 +36,7 @@
             android:id="@+id/idEtEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:imeOptions="actionSend"
-            android:singleLine="true" />
+            android:maxLines="6" />
 
         <Button
             android:id="@+id/idBtSendButton"

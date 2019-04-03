@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
     private HashMap<String, User> userTagList;
 
     private static final String TAG = "MainActivity";
-    private static final String SESSION_ID = "O1OD6UFat1";
+    private static final String SESSION_ID = "URxgM0zh";
     private static final int COUNT = 7;
 
     @Override
@@ -134,24 +134,38 @@ public class MainActivity extends AppCompatActivity implements RecyclerInterface
                     @Override
                     public void onNext(CharSequence charSequence) {
                         mainString = charSequence.toString();
-                        String[] separated = mainString.split(" ");
-                        for (String aSeparated : separated) {
-                            int stringIndex = mainString.indexOf(aSeparated);
-                            int stringLength = aSeparated.length();
-                            int cursorIndex = idEtEditText.getSelectionStart();
-                            int stringEnd = stringIndex + stringLength;
-                            if (mainString.contains("@")) {
-                                if (cursorIndex > stringIndex && cursorIndex <= stringEnd) {
-                                    if (aSeparated.indexOf("@") == 0) {
-                                        subString = aSeparated.substring(aSeparated.indexOf("@") + 1);
-                                        ApiCall(subString);
-                                    }
+                        String firstHalf = mainString.substring(0, idEtEditText.getSelectionStart());
+                        String secondHalf = mainString.substring(idEtEditText.getSelectionStart());
+                        if (mainString.contains("@")) {
+                            if (idEtEditText.getSelectionStart() > firstHalf.lastIndexOf(" ")
+                                    && idEtEditText.getSelectionStart() > firstHalf.lastIndexOf("\n")
+                                    && firstHalf.lastIndexOf("@") > firstHalf.lastIndexOf(" ")
+                                    && firstHalf.lastIndexOf("@") > firstHalf.lastIndexOf("\n")) {
+                                if (mainString.length() == idEtEditText.getSelectionStart()) {
+                                    subString = mainString.substring(mainString.lastIndexOf("@") + 1);
+                                    ApiCall(subString);
                                 } else {
-                                    recyclerAdapter.clearUserList();
+                                    int subStringStart = firstHalf.lastIndexOf("@") + 1;
+                                    int subStringEnd = firstHalf.lastIndexOf("@") + 1;
+                                    if (secondHalf.contains(" ") && secondHalf.contains("\n")) {
+                                        if (secondHalf.indexOf(" ") < secondHalf.indexOf("\n")) {
+                                            subStringEnd = idEtEditText.getSelectionStart() + secondHalf.indexOf(" ");
+                                        } else if (secondHalf.indexOf("\n") < secondHalf.indexOf(" ")) {
+                                            subStringEnd = idEtEditText.getSelectionStart() + secondHalf.indexOf("\n");
+                                        }
+                                    } else if (secondHalf.contains(" ")) {
+                                        subStringEnd = idEtEditText.getSelectionStart() + secondHalf.indexOf(" ");
+                                    } else if (secondHalf.contains("\n")) {
+                                        subStringEnd = idEtEditText.getSelectionStart() + secondHalf.indexOf("\n");
+                                    }
+                                    subString = mainString.substring(subStringStart, subStringEnd);
+                                    ApiCall(subString);
                                 }
                             } else {
                                 recyclerAdapter.clearUserList();
                             }
+                        } else {
+                            recyclerAdapter.clearUserList();
                         }
                     }
                 });
